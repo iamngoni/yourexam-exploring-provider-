@@ -207,7 +207,7 @@ class _DisclaimerState extends State<Disclaimer> {
               image: AssetImage(
                 "assets/images/undraw_online.png",
               ),
-              height: _height * 0.3,
+              height: _height * 0.5,
             ),
             Padding(
               padding: EdgeInsets.symmetric(
