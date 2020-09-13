@@ -156,7 +156,7 @@ class _RoomState extends State<Room> {
           appBar: AppBar(
             backgroundColor: Colors.white,
             title: Text(
-              provider.stringCourses[provider.value],
+              provider.stringCourses[provider.value]["title"],
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -168,6 +168,73 @@ class _RoomState extends State<Room> {
               Container(
                 height: _height,
                 width: _width,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red[50].withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                        height: _height * 0.3,
+                        width: _width,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: provider.recommendedExams.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              elevation: 12.0,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xFFBBD2C5),
+                                      Color(0xFF536976),
+                                    ],
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(4.0),
+                                width: _width * 0.25,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      provider.recommendedExams.toList()[index]
+                                          ["title"],
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.fade,
+                                    ),
+                                    Text(
+                                      "${provider.recommendedExams.toList()[index]["course"].toUpperCase()}${provider.recommendedExams.toList()[index]["code"]} - ${provider.recommendedExams.toList()[index]["year"]}",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                top: _height,
+                child: Container(
+                  height: _height,
+                  width: _width,
+                ),
               ),
             ],
           ),
@@ -252,27 +319,77 @@ class _DisclaimerState extends State<Disclaimer> {
 }
 
 class ExamProvider extends ChangeNotifier {
-  List stringCourses = [
-    "Software Engineering",
-    "Computer Science",
-    "Information Technology",
-    "Information Security And Assurance"
+  List<Map<String, dynamic>> stringCourses = [
+    {
+      "title": "Software Engineering",
+      "code": "ise",
+    },
+    {
+      "title": "Computer Science",
+      "code": "ics",
+    },
+    {
+      "title": "Information Technology",
+      "code": "iit",
+    },
+    {
+      "title": "Information Security And Assurance",
+      "code": "isa",
+    },
+  ];
+
+  bool _isAnySelected = false;
+
+  changeIsBoolStatus(bool status) {
+    _isAnySelected = status;
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> _examsList = [
+    {
+      "code": 121,
+      "title": "Object Oriented Programming",
+      "year": 2018,
+      "course": "ise",
+      "url":
+          "https://github.com/iamngoni/past-exams-hit/raw/master/ISE121_46_ISE121.pdf",
+    },
+    {
+      "code": 125,
+      "title": "Discrete Mathematics",
+      "year": 2018,
+      "course": "ise",
+      "url":
+          "https://github.com/iamngoni/past-exams-hit/raw/master/ISE125_40_ISE125.pdf",
+    },
+    {
+      "code": 126,
+      "title": "Netcentric Principles",
+      "year": 2018,
+      "course": "ise",
+      "url":
+          "https://github.com/iamngoni/past-exams-hit/raw/master/ISE126_15_ISE126.pdf",
+    },
   ];
 
   List<DropdownMenuItem> initializeApp(List courseList) {
     List<DropdownMenuItem<dynamic>> courses = List();
-    for (String item in courseList) {
+    for (Map<String, dynamic> item in courseList) {
       courses.add(
         DropdownMenuItem(
           value: courseList.indexOf(item),
-          child: Text(item),
+          child: Text(item["title"].toString()),
         ),
       );
     }
     return courses;
   }
 
+  get recommendedExams => _examsList
+      .where((element) => element["course"] == stringCourses[value]["code"]);
+
   get getCourses => initializeApp(stringCourses);
+  get getExams => _examsList;
   int _value = 0;
   changeValue(value) {
     _value = value;
